@@ -53,40 +53,49 @@ fn alive_neighbours(grid: &Grid, x: isize, y: isize) -> u8 {
     count
 }
 
-fn generation(grid: Grid) -> Grid {
-    let mut next = grid.clone();
+fn generation(grid: Grid, next: &mut Grid) {
     for (x, row) in grid.iter().enumerate() {
         for (y, alive) in row.iter().enumerate() {
             let n = match alive {
                 true => alive_neighbours(&grid, x as isize, y as isize) - 1,
-                _    => alive_neighbours(&grid, x as isize, y as isize)
+                _ => alive_neighbours(&grid, x as isize, y as isize),
             };
             match n {
                 2 => (),
                 3 => next[x][y] = true,
-                _ => next[x][y] = false
+                _ => next[x][y] = false,
             };
-
         }
     }
-    next
 }
 
 fn draw(grid: Grid) {
-    println!("{}", grid.iter()
-             .map(|row| stringify_row(row))
-             .collect::<Vec<String>>()
-             .join("\n")
-             );
+    println!(
+        "{}",
+        grid.iter()
+            .map(|row| stringify_row(row))
+            .collect::<Vec<String>>()
+            .join("\n")
+    );
 }
 
 fn main() {
-    let mut g = make_grid();
+    let mut grid = make_grid();
+    let mut next_grid = [[false; SIZE]; SIZE];
+    let mut iter_count = usize::max_value();
+
+    if let Some(iters) = args().nth(1) {
+        iter_count = iters
+            .parse()
+            .expect(&format!("Could not parse generation count \"{}\" as integer", iters));
+    }
+
     println!("{}", "\x1b[2J\x1b[H");
-    loop {
-        draw(g);
+    for _ in 0..iter_count {
+        draw(grid);
         println!("{}", "\x1b[0;0H");
-        g = generation(g);
+        generation(grid, &mut next_grid);
+        swap(&mut next_grid, &mut grid);
         thread::sleep(time::Duration::from_millis(SLEEP_TIME_MS));
     }
 }
