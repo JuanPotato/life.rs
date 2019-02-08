@@ -1,8 +1,6 @@
 extern crate rand;
 
 use rand::{thread_rng, Rng};
-use std::env::args;
-use std::mem::swap;
 use std::{thread, time};
 
 type GridRow = [bool; SIZE];
@@ -86,7 +84,7 @@ fn main() {
     let mut next_grid = [[false; SIZE]; SIZE];
     let mut iter_count = usize::max_value();
 
-    if let Some(iters) = args().nth(1) {
+    if let Some(iters) = std::env::args().nth(1) {
         iter_count = iters
             .parse()
             .expect(&format!("Could not parse generation count \"{}\" as integer", iters));
@@ -97,7 +95,7 @@ fn main() {
         draw(grid);
         println!("{}", "\x1b[0;0H");
         generation(grid, &mut next_grid);
-        swap(&mut next_grid, &mut grid);
+        std::mem::swap(&mut next_grid, &mut grid);
         thread::sleep(time::Duration::from_millis(SLEEP_TIME_MS));
     }
 }
