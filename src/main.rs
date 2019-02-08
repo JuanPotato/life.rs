@@ -1,7 +1,7 @@
 extern crate rand;
 
 use rand::distributions::{Bernoulli, Distribution};
-use rand::{thread_rng, Rng};
+use rand::thread_rng;
 use std::{thread, time};
 
 type GridRow = [bool; SIZE];
@@ -22,15 +22,6 @@ fn make_grid() -> Grid {
         }
     }
     grid
-}
-
-fn stringify_row(row: &GridRow) -> String {
-    row.iter()
-        .map(|c| match c {
-            true => 'o',
-            _ => ' ',
-        })
-        .collect()
 }
 
 fn alive_neighbours(grid: &Grid, x: isize, y: isize) -> u8 {
@@ -68,6 +59,15 @@ fn generation(grid: Grid, next: &mut Grid) {
             };
         }
     }
+}
+
+fn stringify_row(row: &GridRow) -> String {
+    row.iter()
+        .map(|c| match c {
+            true => 'o',
+            _ => ' ',
+        })
+        .collect()
 }
 
 fn draw(grid: Grid) {
