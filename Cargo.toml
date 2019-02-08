@@ -1,5 +1,5 @@
 [package]
-name = "mgol"
+name = "life-rs"
 version = "0.1.0"
 authors = ["expectocode <expectocode@gmail.com>"]
 
