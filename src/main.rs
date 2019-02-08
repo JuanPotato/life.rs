@@ -47,9 +47,7 @@ fn alive_neighbours(grid: &Grid, x: isize, y: isize) -> u8 {
                 continue
             }
 
-            if grid[xindex][yindex] {
-                count += 1
-            }
+            count += grid[xindex][yindex] as u8;
         }
     }
     count
