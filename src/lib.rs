@@ -23,15 +23,21 @@ impl Grid {
         let d = Bernoulli::new(live_chance);
         let mut rng = thread_rng();
 
-        for y in 0..self.rows.len() {
-            for x in 0..self.rows[0].len() {
-                self.rows[y][x] = d.sample(&mut rng);
+        for y in 0..self.len() {
+            for x in 0..self[0].len() {
+                self[y][x] = d.sample(&mut rng);
             }
         }
     }
 
+    pub fn set_cells(&mut self, coords: &[(usize, usize)], x_offset: usize, y_offset: usize) {
+        for (x, y) in coords {
+            self[y_offset + y][x_offset + x] = true;
+        }
+    }
+
     pub fn stringify(&self) -> String {
-        self.rows
+        self
             .iter()
             .map(|row| stringify_row(row))
             .collect::<Vec<String>>()
@@ -40,6 +46,10 @@ impl Grid {
 
     pub fn iter(&self) -> std::slice::Iter<Box<[bool]>> {
         self.rows.iter()
+    }
+
+    pub fn len(&self) -> usize {
+        self.rows.len()
     }
 }
 
