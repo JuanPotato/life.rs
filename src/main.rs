@@ -25,37 +25,41 @@ fn make_grid() -> Grid {
 }
 
 fn alive_neighbours(grid: &Grid, x: isize, y: isize) -> u8 {
-    // Note this includes the co-ord in the center.
     // grid[((x - 1)%(SIZE as isize)) as usize..(x + 2) as usize].iter().map(|x| println!("{:?}", x));
     let mut count = 0;
-    for xindex in x - 1..x + 2 {
-        for yindex in y - 1..y + 2 {
-            if xindex < 0 || yindex < 0 {
-                continue;
-            }
-            let xindex = xindex as usize;
-            let yindex = yindex as usize;
-            if xindex >= SIZE || yindex >= SIZE {
-                continue;
-            }
-
-            count += grid[xindex][yindex] as u8;
+    let offsets = [
+        (-1, -1),
+        (-1, 0),
+        (-1, 1),
+        (0, -1),
+        (0, 1),
+        (1, -1),
+        (1, 0),
+        (1, 1),
+    ];
+    for (x_o, y_o) in &offsets {
+        if x_o + x < 0 || y_o + y < 0 {
+            continue;
         }
+        let xindex = (x_o + x) as usize;
+        let yindex = (y_o + y) as usize;
+
+        if xindex >= SIZE || yindex >= SIZE {
+            continue;
+        }
+
+        count += grid[yindex][xindex] as u8;
     }
     count
 }
 
 fn generation(grid: Grid, next: &mut Grid) {
-    for (x, row) in grid.iter().enumerate() {
-        for (y, alive) in row.iter().enumerate() {
-            let n = match alive {
-                true => alive_neighbours(&grid, x as isize, y as isize) - 1,
-                _ => alive_neighbours(&grid, x as isize, y as isize),
-            };
-            match n {
-                2 => (),
-                3 => next[x][y] = true,
-                _ => next[x][y] = false,
+    for (y, row) in grid.iter().enumerate() {
+        for (x, alive) in row.iter().enumerate() {
+            next[y][x] = match alive_neighbours(&grid, x as isize, y as isize) {
+                2 => *alive,
+                3 => true,
+                _ => false,
             };
         }
     }
