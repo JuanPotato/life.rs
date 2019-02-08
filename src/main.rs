@@ -1,24 +1,25 @@
 extern crate rand;
 
+use rand::distributions::{Bernoulli, Distribution};
 use rand::{thread_rng, Rng};
 use std::{thread, time};
 
 type GridRow = [bool; SIZE];
 type Grid = [GridRow; SIZE];
 
-const SIZE: usize = 30;
-const INIT: usize = 100;
+const SIZE: usize = 60;
+const FRAC_ALIVE: f64 = 0.1;
 const SLEEP_TIME_MS: u64 = 200;
 
 fn make_grid() -> Grid {
+    let d = Bernoulli::new(FRAC_ALIVE);
     let mut rng = thread_rng();
     let mut grid = [[false; SIZE]; SIZE];
 
-    // Could also use rng.gen_bool() with a probability during generation.
-    for _ in 0..INIT {
-        let x: usize = rng.gen_range(0, SIZE);
-        let y: usize = rng.gen_range(0, SIZE);
-        grid[x][y] = true;
+    for x in 0..SIZE {
+        for y in 0..SIZE {
+            grid[x][y] = d.sample(&mut rng);
+        }
     }
     grid
 }
@@ -85,9 +86,10 @@ fn main() {
     let mut iter_count = usize::max_value();
 
     if let Some(iters) = std::env::args().nth(1) {
-        iter_count = iters
-            .parse()
-            .expect(&format!("Could not parse generation count \"{}\" as integer", iters));
+        iter_count = iters.parse().expect(&format!(
+            "Could not parse generation count \"{}\" as integer",
+            iters
+        ));
     }
 
     println!("{}", "\x1b[2J\x1b[H");
