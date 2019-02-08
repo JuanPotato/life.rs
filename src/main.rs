@@ -1,13 +1,15 @@
 extern crate rand;
 
+use rand::{thread_rng, Rng};
+use std::env::args;
+use std::mem::swap;
 use std::{thread, time};
-use rand::{Rng, thread_rng};
 
 type GridRow = [bool; SIZE];
 type Grid = [GridRow; SIZE];
 
-const SIZE: usize        = 30;
-const INIT: usize        = 100;
+const SIZE: usize = 30;
+const INIT: usize = 100;
 const SLEEP_TIME_MS: u64 = 200;
 
 fn make_grid() -> Grid {
@@ -26,9 +28,9 @@ fn make_grid() -> Grid {
 fn stringify_row(row: &GridRow) -> String {
     row.iter()
         .map(|c| match c {
-                    true => 'o',
-                    _    => ' '
-                 })
+            true => 'o',
+            _ => ' ',
+        })
         .collect()
 }
 
@@ -39,12 +41,12 @@ fn alive_neighbours(grid: &Grid, x: isize, y: isize) -> u8 {
     for xindex in x - 1..x + 2 {
         for yindex in y - 1..y + 2 {
             if xindex < 0 || yindex < 0 {
-                continue
+                continue;
             }
             let xindex = xindex as usize;
             let yindex = yindex as usize;
             if xindex >= SIZE || yindex >= SIZE {
-                continue
+                continue;
             }
 
             count += grid[xindex][yindex] as u8;
