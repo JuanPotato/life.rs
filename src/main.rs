@@ -57,6 +57,7 @@ fn generation(grid: &Grid, next: &mut Grid) {
 
 fn draw(grid: &Grid) {
     println!("{}", grid.stringify());
+    println!("{}", "\x1b[0;0H");
 }
 
 fn main() {
@@ -74,7 +75,6 @@ fn main() {
     println!("{}", "\x1b[2J\x1b[H");
     for _ in 0..iter_count {
         draw(&grid);
-        println!("{}", "\x1b[0;0H");
         generation(&grid, &mut next_grid);
         std::mem::swap(&mut next_grid, &mut grid);
         thread::sleep(time::Duration::from_millis(SLEEP_TIME_MS));
