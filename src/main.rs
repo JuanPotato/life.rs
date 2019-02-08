@@ -8,11 +8,11 @@ type GridRow = [bool; SIZE];
 type Grid = [GridRow; SIZE];
 
 const SIZE: usize = 60;
-const FRAC_ALIVE: f64 = 0.1;
+const ALIVE_CHANCE: f64 = 0.1;
 const SLEEP_TIME_MS: u64 = 200;
 
 fn make_grid() -> Grid {
-    let d = Bernoulli::new(FRAC_ALIVE);
+    let d = Bernoulli::new(ALIVE_CHANCE);
     let mut rng = thread_rng();
     let mut grid = [[false; SIZE]; SIZE];
 
