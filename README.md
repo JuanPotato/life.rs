@@ -7,4 +7,4 @@ usage:
 -   `./gol N` for random start, N iterations
 
 
-edit the SIZE, ALIVE_CHANCE, and SLEEP_TIME_MS constants at the top of main.rs if you want a different size, number of starting cells, or delay between generations.
+edit the WIDTH, HEIGHT, ALIVE_CHANCE, and SLEEP_TIME_MS constants at the top of main.rs if you want a different size, number of starting cells, or delay between generations.
