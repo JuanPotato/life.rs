@@ -6,7 +6,7 @@ use std::{thread, time};
 const WIDTH: usize = 80;
 const HEIGHT: usize = 20;
 const ALIVE_CHANCE: f64 = 0.2;
-const SLEEP_TIME_MS: u64 = 200;
+const SLEEP_TIME_MS: u64 = 60;
 
 fn make_grid() -> Grid {
     let mut grid = Grid::new(WIDTH, HEIGHT);
@@ -14,8 +14,16 @@ fn make_grid() -> Grid {
     grid
 }
 
+fn modulo(a: isize, n: isize) -> isize {
+    // pre: n > 0
+    if a < 0 {
+        (a % n + n) % n
+    } else {
+        a % n
+    }
+}
+
 fn alive_neighbours(grid: &Grid, x: isize, y: isize) -> u8 {
-    // grid[((x - 1)%(SIZE as isize)) as usize..(x + 2) as usize].iter().map(|x| println!("{:?}", x));
     let mut count = 0;
     let offsets = [
         (-1, -1),
@@ -28,15 +36,8 @@ fn alive_neighbours(grid: &Grid, x: isize, y: isize) -> u8 {
         (1, 1),
     ];
     for (x_o, y_o) in &offsets {
-        if x_o + x < 0 || y_o + y < 0 {
-            continue;
-        }
-        let xindex = (x_o + x) as usize;
-        let yindex = (y_o + y) as usize;
-
-        if xindex >= WIDTH || yindex >= HEIGHT {
-            continue;
-        }
+        let xindex = modulo(x_o + x, WIDTH as isize) as usize;
+        let yindex = modulo(y_o + y, HEIGHT as isize) as usize;
 
         count += grid[yindex][xindex] as u8;
     }

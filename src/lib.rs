@@ -37,11 +37,14 @@ impl Grid {
     }
 
     pub fn stringify(&self) -> String {
+        let mut lines = Vec::with_capacity(self.len() + 2);
+        lines.push("+".to_owned() + &"-".repeat(self[0].len()) + "+");
         self
             .iter()
             .map(|row| stringify_row(row))
-            .collect::<Vec<String>>()
-            .join("\n")
+            .for_each(|s| lines.push(s));
+        lines.push("+".to_owned() + &"-".repeat(self[0].len()) + "+");
+        lines.join("\n")
     }
 
     pub fn iter(&self) -> std::slice::Iter<Box<[bool]>> {
@@ -54,12 +57,16 @@ impl Grid {
 }
 
 fn stringify_row(row: &Box<[bool]>) -> String {
+    let mut s = String::with_capacity(row.len() + 2);
+    s.push('|');
     row.iter()
         .map(|c| match c {
             true => 'o',
             _ => ' ',
         })
-        .collect()
+        .for_each(|c| s.push(c));
+    s.push('|');
+    s
 }
 
 impl Index<usize> for Grid {
