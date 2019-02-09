@@ -47,24 +47,22 @@ fn alive_neighbours(grid: &Grid, x: usize, y: usize) -> u8 {
         (1, 1),
     ];
     for (x_o, y_o) in &offsets {
-        let xindex = modulo(x_o + x as isize, grid[0].len() as isize);
-        let yindex = modulo(y_o + y as isize, grid.len() as isize);
+        let xindex = modulo(x_o + x as isize, grid.width() as isize);
+        let yindex = modulo(y_o + y as isize, grid.height() as isize);
 
-        count += grid[yindex][xindex] as u8;
+        count += grid[(xindex, yindex)] as u8;
     }
     count
 }
 
 /// Compute the next generation from `grid` and place the result in `next`
 fn generation(grid: &Grid, next: &mut Grid) {
-    for (y, row) in grid.iter().enumerate() {
-        for (x, alive) in row.iter().enumerate() {
-            next[y][x] = match alive_neighbours(&grid, x, y) {
-                2 => *alive,
-                3 => true,
-                _ => false,
-            };
-        }
+    for (x, y, &alive) in grid.iter() {
+        next[(x, y)] = match alive_neighbours(&grid, x, y) {
+            2 => alive,
+            3 => true,
+            _ => false,
+        };
     }
 }
 

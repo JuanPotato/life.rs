@@ -6,7 +6,9 @@ use rand::{thread_rng, Rng};
 
 /// A representation of the grid of the Game of Life.
 pub struct Grid {
-    rows: Box<[Box<[bool]>]>,
+    cells: Box<[bool]>,
+    width: usize,
+    height: usize,
 }
 
 impl Grid {
@@ -17,18 +19,27 @@ impl Grid {
         }
 
         Grid {
-            rows: vec![vec![false; width].into_boxed_slice(); height].into_boxed_slice(),
+            cells: vec![false; width * height].into_boxed_slice(),
+            width,
+            height,
         }
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
+    pub fn width(&self) -> usize {
+        self.width
     }
 
     /// Set every cell's state randomly.
     /// `live_chance` is the probability that a given cell will be `true`.
     pub fn randomise(&mut self, live_chance: f64) {
         let mut rng = thread_rng();
-
-        for y in 0..self.len() {
-            for x in 0..self[0].len() {
-                self[y][x] = rng.gen_bool(live_chance);
+        for y in 0..self.height {
+            for x in 0..self.width {
+                self[(x, y)] = rng.gen_bool(live_chance);
             }
         }
     }
@@ -37,9 +48,10 @@ impl Grid {
     ///
     /// `x_offset` and `y_offset` are added to each x and y.
     pub fn set_cells(&mut self, coords: &[(usize, usize)], x_offset: usize, y_offset: usize) {
-        for (x, y) in coords {
-            self[y_offset + y][x_offset + x] = true;
-        }
+        coords
+            .iter()
+            .map(|(x, y)| (x + x_offset, y + y_offset))
+            .for_each(|coord| self[coord] = true);
     }
 
     /// Get an ASCII-art representation of the whole grid, with lines to indicate the edges.
@@ -47,25 +59,30 @@ impl Grid {
     /// Note: the representation uses half the number of rows since two grid rows are rendered in
     /// each printed row.
     pub fn stringify(&self) -> String {
-        let mut lines = Vec::with_capacity((self.len() / 2) + 2);
-        lines.push("+".to_owned() + &"-".repeat(self[0].len()) + "+");
-        self.rows
-            .chunks(2)
-            .map(|rows| stringify_row_pair(&rows[0], &rows[1]))
+        let mut lines = Vec::with_capacity((self.height / 2) + 2);
+        lines.push("+".to_owned() + &"-".repeat(self.width) + "+");
+        self.cells
+            .chunks_exact(self.width * 2)
+            .map(|cells| stringify_row_pair(&cells[..self.width], &cells[self.width..]))
             .for_each(|s| lines.push(s));
-        lines.push("+".to_owned() + &"-".repeat(self[0].len()) + "+");
+        lines.push("+".to_owned() + &"-".repeat(self.width) + "+");
 
         lines.join("\n")
     }
 
     /// Get an iterator over the rows of the grid.
-    pub fn iter(&self) -> std::slice::Iter<Box<[bool]>> {
-        self.rows.iter()
+    pub fn iter_rows(&self) -> impl Iterator<Item = &[bool]> {
+        self.cells.chunks_exact(self.width)
     }
 
-    /// Get the number of rows in the grid.
-    pub fn len(&self) -> usize {
-        self.rows.len()
+    /// Get an iterator over the cells of the grid.
+    /// Yields a tuple (x, y, value)
+    pub fn iter(&self) -> impl Iterator<Item = (usize, usize, &bool)> {
+        let width = self.width;
+        self.cells
+            .iter()
+            .enumerate()
+            .map(move |(i, alive)| (i % width, i / width, alive))
     }
 }
 
@@ -87,18 +104,20 @@ fn stringify_row_pair(up_row: &Box<[bool]>, down_row: &Box<[bool]>) -> String {
     s
 }
 
-/// Index directly into the rows of the grid.
-impl Index<usize> for Grid {
-    type Output = Box<[bool]>;
+/// Index directly into the cells of the grid.
+impl Index<(usize, usize)> for Grid {
+    type Output = bool;
 
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.rows[index]
+    fn index(&self, xy: (usize, usize)) -> &Self::Output {
+        let (x, y) = xy;
+        &self.cells[y * self.width + x]
     }
 }
 
 /// Index directly into the rows of the grid.
-impl IndexMut<usize> for Grid {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.rows[index]
+impl IndexMut<(usize, usize)> for Grid {
+    fn index_mut(&mut self, xy: (usize, usize)) -> &mut Self::Output {
+        let (x, y) = xy;
+        &mut self.cells[y * self.width + x]
     }
 }
