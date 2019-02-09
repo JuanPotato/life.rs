@@ -43,11 +43,15 @@ impl Grid {
     }
 
     /// Get an ASCII-art representation of the whole grid, with lines to indicate the edges.
+    ///
+    /// Note: the representation uses half the number of rows since two grid rows are rendered in
+    /// each printed row.
     pub fn stringify(&self) -> String {
-        let mut lines = Vec::with_capacity(self.len() + 2);
+        let mut lines = Vec::with_capacity((self.len() / 2) + 2);
         lines.push("+".to_owned() + &"-".repeat(self[0].len()) + "+");
-        self.iter()
-            .map(|row| stringify_row(row))
+        self.rows
+            .chunks(2)
+            .map(|rows| stringify_row_pair(&rows[0], &rows[1]))
             .for_each(|s| lines.push(s));
         lines.push("+".to_owned() + &"-".repeat(self[0].len()) + "+");
 
@@ -66,13 +70,16 @@ impl Grid {
 }
 
 /// Get an ASCII-art representation of a single line, intended for use with `Grid.stringify()`.
-fn stringify_row(row: &Box<[bool]>) -> String {
-    let mut s = String::with_capacity(row.len() + 2);
+fn stringify_row_pair(up_row: &Box<[bool]>, down_row: &Box<[bool]>) -> String {
+    let mut s = String::with_capacity(up_row.len() + 2);
     s.push('|');
-    row.iter()
-        .map(|c| match c {
-            true => 'o',
-            _ => ' ',
+    up_row.iter()
+        .zip(down_row.iter())
+        .map(|pair| match pair {
+            (false, true) => '▄',
+            (true, false) => '▀',
+            (true, true) => '█',
+            _ => ' '
         })
         .for_each(|c| s.push(c));
     s.push('|');

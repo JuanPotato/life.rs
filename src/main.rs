@@ -3,13 +3,21 @@ extern crate grid;
 use grid::Grid;
 use std::{thread, time};
 
+/// The number of columns that will be printed to the terminal (same as the number of columns in
+/// the game grid).
 const WIDTH: usize = 80;
+
+/// The number of rows that will be printed to the terminal.
+///
+/// Note that the number of rows in the game grid is twice this amount, as each printed row is two
+/// game rows.
 const HEIGHT: usize = 20;
+
 const ALIVE_CHANCE: f64 = 0.2;
 const SLEEP_TIME_MS: u64 = 60;
 
 fn make_grid() -> Grid {
-    let mut grid = Grid::new(WIDTH, HEIGHT);
+    let mut grid = Grid::new(WIDTH, HEIGHT * 2);
     grid.randomise(ALIVE_CHANCE);
     grid
 }
@@ -39,8 +47,8 @@ fn alive_neighbours(grid: &Grid, x: usize, y: usize) -> u8 {
         (1, 1),
     ];
     for (x_o, y_o) in &offsets {
-        let xindex = modulo(x_o + x as isize, WIDTH as isize);
-        let yindex = modulo(y_o + y as isize, HEIGHT as isize);
+        let xindex = modulo(x_o + x as isize, grid[0].len() as isize);
+        let yindex = modulo(y_o + y as isize, grid.len() as isize);
 
         count += grid[yindex][xindex] as u8;
     }
@@ -67,7 +75,7 @@ fn draw(grid: &Grid) {
 
 fn main() {
     let mut grid = make_grid();
-    let mut next_grid = Grid::new(WIDTH, HEIGHT);
+    let mut next_grid = Grid::new(WIDTH, HEIGHT * 2);
     let mut iter_count = usize::max_value();
 
     if let Some(iters) = std::env::args().nth(1) {
