@@ -63,8 +63,11 @@ fn main() {
     let mut iter_count = usize::max_value();
 
     if let Some(iters) = std::env::args().nth(1) {
-        iter_count = iters.parse().unwrap_or_else(|_| {
-            panic!("Could not parse generation count \"{}\" as integer", iters)
+        iter_count = iters.parse().unwrap_or_else(|e| {
+            panic!(
+                "Could not parse generation count \"{}\" as integer: {}",
+                iters, e
+            )
         });
     }
 
