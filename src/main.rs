@@ -22,16 +22,6 @@ fn make_grid() -> Grid {
     grid
 }
 
-/// Euclidean modulo
-/// As long as n is positive, the result will always be positive
-fn modulo(a: isize, n: isize) -> usize {
-    if a < 0 {
-        ((a % n + n) % n) as usize
-    } else {
-        (a % n) as usize
-    }
-}
-
 /// Count the number of neighbouring cells that are alive, not including itself
 /// Wraps around the grid edges, effectively making it a torus
 fn alive_neighbours(grid: &Grid, x: usize, y: usize) -> u8 {
@@ -47,10 +37,7 @@ fn alive_neighbours(grid: &Grid, x: usize, y: usize) -> u8 {
         (1, 1),
     ];
     for (x_o, y_o) in &offsets {
-        let xindex = modulo(x_o + x as isize, grid.width() as isize);
-        let yindex = modulo(y_o + y as isize, grid.height() as isize);
-
-        count += grid[(xindex, yindex)] as u8;
+        count += grid[(x_o + x as isize, y_o + y as isize)] as u8;
     }
     count
 }

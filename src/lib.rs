@@ -105,12 +105,23 @@ fn stringify_row_pair(up_row: &[bool], down_row: &[bool]) -> String {
     s
 }
 
+/// Euclidean modulo
+/// As long as n is positive, the result will always be positive
+fn modulo(a: isize, n: isize) -> usize {
+    if a < 0 {
+        ((a % n + n) % n) as usize
+    } else {
+        (a % n) as usize
+    }
+}
+
 /// Index directly into the cells of the grid.
 impl Index<(usize, usize)> for Grid {
     type Output = bool;
 
     fn index(&self, xy: (usize, usize)) -> &Self::Output {
         let (x, y) = xy;
+        let (x, y) = (x % self.width, y % self.height);
         &self.cells[y * self.width + x]
     }
 }
@@ -119,6 +130,27 @@ impl Index<(usize, usize)> for Grid {
 impl IndexMut<(usize, usize)> for Grid {
     fn index_mut(&mut self, xy: (usize, usize)) -> &mut Self::Output {
         let (x, y) = xy;
+        let (x, y) = (x % self.width, y % self.height);
+        &mut self.cells[y * self.width + x]
+    }
+}
+
+/// Index directly into the cells of the grid with isize coordinates.
+impl Index<(isize, isize)> for Grid {
+    type Output = bool;
+
+    fn index(&self, xy: (isize, isize)) -> &Self::Output {
+        let (x, y) = xy;
+        let (x, y) = (modulo(x, self.width as isize), modulo(y, self.height as isize));
+        &self.cells[y * self.width + x]
+    }
+}
+
+/// Index directly into the rows of the grid with isize coordinates.
+impl IndexMut<(isize, isize)> for Grid {
+    fn index_mut(&mut self, xy: (isize, isize)) -> &mut Self::Output {
+        let (x, y) = xy;
+        let (x, y) = (modulo(x, self.width as isize), modulo(y, self.height as isize));
         &mut self.cells[y * self.width + x]
     }
 }
