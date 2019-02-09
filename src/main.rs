@@ -24,8 +24,7 @@ fn make_grid() -> Grid {
 
 /// Count the number of neighbouring cells that are alive, not including itself
 /// Wraps around the grid edges, effectively making it a torus
-fn alive_neighbours(grid: &Grid, x: usize, y: usize) -> u8 {
-    let mut count = 0;
+fn alive_neighbours(grid: &Grid, x: usize, y: usize) -> usize {
     let offsets = [
         (-1, -1),
         (-1, 0),
@@ -36,10 +35,10 @@ fn alive_neighbours(grid: &Grid, x: usize, y: usize) -> u8 {
         (1, 0),
         (1, 1),
     ];
-    for (x_o, y_o) in &offsets {
-        count += grid[(x_o + x as isize, y_o + y as isize)] as u8;
-    }
-    count
+    offsets
+        .iter()
+        .filter(|(x_o, y_o)| grid[(x_o + x as isize, y_o + y as isize)])
+        .count()
 }
 
 /// Compute the next generation from `grid` and place the result in `next`
