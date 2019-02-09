@@ -9,4 +9,7 @@ usage:
 
 edit the WIDTH, HEIGHT, ALIVE_CHANCE, and SLEEP_TIME_MS constants at the top of main.rs if you want a different size, number of starting cells, or delay between generations.
 
-![out](https://user-images.githubusercontent.com/15344581/52515599-9824e180-2c15-11e9-959e-0816327231a8.gif)
+
+![random grid gif](https://user-images.githubusercontent.com/15344581/52524646-2e4d1c00-2c97-11e9-9fd0-188a5013478e.gif)
+
+![glider gun gif](https://user-images.githubusercontent.com/15344581/52524579-5d16c280-2c96-11e9-91c0-8dad3fe36852.gif)
