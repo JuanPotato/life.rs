@@ -8,3 +8,5 @@ usage:
 
 
 edit the WIDTH, HEIGHT, ALIVE_CHANCE, and SLEEP_TIME_MS constants at the top of main.rs if you want a different size, number of starting cells, or delay between generations.
+
+![out](https://user-images.githubusercontent.com/15344581/52515599-9824e180-2c15-11e9-959e-0816327231a8.gif)
