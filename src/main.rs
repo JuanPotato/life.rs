@@ -68,7 +68,7 @@ fn generation(grid: &Grid, next: &mut Grid) {
 
 fn draw(grid: &Grid) {
     println!("{}", grid.stringify());
-    println!("{}", "\x1b[0;0H");
+    println!("\x1b[0;0H");
 }
 
 fn main() {
@@ -77,13 +77,12 @@ fn main() {
     let mut iter_count = usize::max_value();
 
     if let Some(iters) = std::env::args().nth(1) {
-        iter_count = iters.parse().expect(&format!(
-            "Could not parse generation count \"{}\" as integer",
-            iters
-        ));
+        iter_count = iters.parse().unwrap_or_else(|_| {
+            panic!("Could not parse generation count \"{}\" as integer", iters)
+        });
     }
 
-    println!("{}", "\x1b[2J\x1b[H");
+    println!("\x1b[2J\x1b[H");
     for _ in 0..iter_count {
         draw(&grid);
         generation(&grid, &mut next_grid);

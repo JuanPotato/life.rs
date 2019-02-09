@@ -87,16 +87,17 @@ impl Grid {
 }
 
 /// Get an ASCII-art representation of a single line, intended for use with `Grid.stringify()`.
-fn stringify_row_pair(up_row: &Box<[bool]>, down_row: &Box<[bool]>) -> String {
+fn stringify_row_pair(up_row: &[bool], down_row: &[bool]) -> String {
     let mut s = String::with_capacity(up_row.len() + 2);
     s.push('|');
-    up_row.iter()
+    up_row
+        .iter()
         .zip(down_row.iter())
         .map(|pair| match pair {
             (false, true) => '▄',
             (true, false) => '▀',
             (true, true) => '█',
-            _ => ' '
+            _ => ' ',
         })
         .for_each(|c| s.push(c));
     s.push('|');
