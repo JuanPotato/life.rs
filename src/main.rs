@@ -23,7 +23,6 @@ fn make_grid() -> Grid {
 }
 
 /// Count the number of neighbouring cells that are alive, not including itself
-/// Wraps around the grid edges, effectively making it a torus
 fn alive_neighbours(grid: &Grid, x: usize, y: usize) -> usize {
     let offsets = [
         (-1, -1),

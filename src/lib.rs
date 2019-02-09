@@ -5,6 +5,7 @@ use std::vec::Vec;
 use rand::{thread_rng, Rng};
 
 /// A representation of the grid of the Game of Life.
+/// Indexing wraps around the grid edges, effectively making it a torus
 pub struct Grid {
     cells: Box<[bool]>,
     width: usize,
