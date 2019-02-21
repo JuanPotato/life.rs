@@ -13,3 +13,4 @@ path = "src/main.rs"
 
 [dependencies]
 rand = "0.5"
+structopt = "0.2"
