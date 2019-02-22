@@ -1,6 +1,5 @@
 extern crate rand;
 use std::ops::{Index, IndexMut};
-use std::vec::Vec;
 
 use rand::{thread_rng, Rng};
 
@@ -60,15 +59,22 @@ impl Grid {
     /// Note: the representation uses half the number of rows since two grid rows are rendered in
     /// each printed row.
     pub fn stringify(&self) -> String {
-        let mut lines = Vec::with_capacity((self.height / 2) + 2);
-        lines.push("+".to_owned() + &"-".repeat(self.width) + "+");
-        self.cells
-            .chunks_exact(self.width * 2)
-            .map(|cells| stringify_row_pair(&cells[..self.width], &cells[self.width..]))
-            .for_each(|s| lines.push(s));
-        lines.push("+".to_owned() + &"-".repeat(self.width) + "+");
+        let mut out = String::with_capacity((self.width + 2) * (self.height + 2) / 2 * 3);
 
-        lines.join("\n")
+        out.push('+');
+        out.push_str(&"-".repeat(self.width));
+        out.push('+');
+        out.push('\n');
+
+        self.cells.chunks_exact(self.width * 2).for_each(|cells| {
+            stringify_row_pair(&mut out, &cells[..self.width], &cells[self.width..])
+        });
+
+        out.push('+');
+        out.push_str(&"-".repeat(self.width));
+        out.push('+');
+
+        out
     }
 
     /// Get an iterator over the rows of the grid.
@@ -87,23 +93,17 @@ impl Grid {
     }
 }
 
+const BLOCKS: [char; 4] = [' ', '▄', '▀', '█'];
+
 /// Get an ASCII-art representation of a single line, intended for use with `Grid.stringify()`.
-fn stringify_row_pair(up_row: &[bool], down_row: &[bool]) -> String {
-    let mut s = String::with_capacity(up_row.len() + 2);
-    s.push('|');
+fn stringify_row_pair(out: &mut String, up_row: &[bool], down_row: &[bool]) {
+    out.push('|');
     up_row
         .iter()
         .zip(down_row.iter())
-        .map(|pair| match pair {
-            (false, true) => '▄',
-            (true, false) => '▀',
-            (true, true) => '█',
-            _ => ' ',
-        })
-        .for_each(|c| s.push(c));
-    s.push('|');
-
-    s
+        .for_each(|(top, bot)| out.push(BLOCKS[((*top as usize) << 1) + (*bot as usize)]));
+    out.push('|');
+    out.push('\n');
 }
 
 /// Euclidean modulo
@@ -142,7 +142,10 @@ impl Index<(isize, isize)> for Grid {
 
     fn index(&self, xy: (isize, isize)) -> &Self::Output {
         let (x, y) = xy;
-        let (x, y) = (modulo(x, self.width as isize), modulo(y, self.height as isize));
+        let (x, y) = (
+            modulo(x, self.width as isize),
+            modulo(y, self.height as isize),
+        );
         &self.cells[y * self.width + x]
     }
 }
@@ -151,7 +154,10 @@ impl Index<(isize, isize)> for Grid {
 impl IndexMut<(isize, isize)> for Grid {
     fn index_mut(&mut self, xy: (isize, isize)) -> &mut Self::Output {
         let (x, y) = xy;
-        let (x, y) = (modulo(x, self.width as isize), modulo(y, self.height as isize));
+        let (x, y) = (
+            modulo(x, self.width as isize),
+            modulo(y, self.height as isize),
+        );
         &mut self.cells[y * self.width + x]
     }
 }
