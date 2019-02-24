@@ -11,6 +11,10 @@ pub struct Grid {
     height: usize,
 }
 
+const BLOCKS: [char; 4] = [' ', '▄', '▀', '█'];
+// The storage used for each block character, excluding the space.
+const BYTES_PER_BLOCK: usize = 3;
+
 impl Grid {
     /// Create a new empty (false-initialised) Grid. Width and height must be positive.
     pub fn new(width: usize, height: usize) -> Grid {
@@ -59,7 +63,15 @@ impl Grid {
     /// Note: the representation uses half the number of rows since two grid rows are rendered in
     /// each printed row.
     pub fn stringify(&self) -> String {
-        let mut out = String::with_capacity((self.width + 2) * (self.height + 2) / 2 * 3);
+        let printed_height = self.height / 2;
+        let mut out = String::with_capacity(
+            self.width  * printed_height * BYTES_PER_BLOCK // main grid
+            + self.width * 2 // top and bottom borders
+            + self.height // left and right borders
+            + printed_height + 1 // newlines after every line except the last
+            + 4 // corners of the borders
+            );
+
 
         out.push('+');
         out.push_str(&"-".repeat(self.width));
@@ -92,8 +104,6 @@ impl Grid {
             .map(move |(i, alive)| (i % width, i / width, alive))
     }
 }
-
-const BLOCKS: [char; 4] = [' ', '▄', '▀', '█'];
 
 /// Get an ASCII-art representation of a single line, intended for use with `Grid.stringify()`.
 fn stringify_row_pair(out: &mut String, up_row: &[bool], down_row: &[bool]) {
