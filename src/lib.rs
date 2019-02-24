@@ -67,7 +67,7 @@ impl Grid {
         let mut out = String::with_capacity(
             self.width  * printed_height * BYTES_PER_BLOCK // main grid
             + self.width * 2 // top and bottom borders
-            + self.height // left and right borders
+            + printed_height *  2 // left and right borders
             + printed_height + 1 // newlines after every line except the last
             + 4 // corners of the borders
             );
